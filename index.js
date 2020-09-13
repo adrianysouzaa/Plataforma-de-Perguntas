@@ -24,8 +24,14 @@ app.use(bodyParser.json());
 
 //Rotas
 app.get("/", (req, res) =>{
+    Pergunta.findAll({ raw:true, order:[
+        ['id', 'DESC'] // ASC = Crescente || DES = Descrecente
 
-    res.render("index");
+    ]}).then(perguntas =>{
+        res.render("index",{
+            perguntas: perguntas
+        });
+    });
 });
 
 app.get("/perguntar",(req, res) => {
@@ -43,5 +49,18 @@ app.post("/salvarpergunta", (req, res) => {
         res.redirect("/");
     });
 });
+
+app.get("/pergunta/:id",(req ,res) => {
+    var id = req.params.id;
+    Pergunta.findOne({
+        where: {id: id}
+    }).then(pergunta => {
+        if(pergunta != undefined){ // Pergunta encontrada
+            res.render("pergunta");
+        }else{
+            res.redirect("/");
+        }
+});
+})
 
 app.listen(8080,()=>{ console.log("App rodando!");});
